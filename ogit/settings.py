@@ -1,0 +1,2 @@
+APPNAME = 'ogit'
+paths = None
