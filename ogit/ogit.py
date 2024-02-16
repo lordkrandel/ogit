@@ -1,6 +1,8 @@
 import click
+
 from .git import Git
 from . import settings
+
 
 @click.group()
 def cli():

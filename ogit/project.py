@@ -1,4 +1,5 @@
 import json
+
 from .json_mixin import JsonMixin
 
 

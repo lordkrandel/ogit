@@ -3,11 +3,13 @@
 """Console script for ogit."""
 
 import click
-from .ogit import cli
 from pathlib import Path
-from .project import Projects
 from types import SimpleNamespace
+
 from . import settings
+from .ogit import cli
+from .project import Projects
+
 
 def get_paths():
     config = Path(click.get_app_dir(settings.APPNAME, roaming=True, force_posix=False))

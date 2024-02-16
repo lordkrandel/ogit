@@ -1,7 +1,9 @@
-from .external import External
 from pathlib import Path
 import invoke
 import re
+
+from .external import External
+
 
 class Git(External):
 
