@@ -4,10 +4,10 @@
 
 
 import unittest
+
 from click.testing import CliRunner
 
-from ogit import ogit
-from ogit import cli
+from ogit import cli, ogit
 
 
 class TestOgit(unittest.TestCase):

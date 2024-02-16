@@ -2,7 +2,6 @@ import json
 
 from .json_mixin import JsonMixin
 
-
 TEMPLATE = """{
     "name": "master",
     "repos": {}

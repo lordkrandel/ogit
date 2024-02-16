@@ -1,7 +1,7 @@
 import click
 
-from .git import Git
 from . import settings
+from .git import Git
 
 
 @click.group()

@@ -2,9 +2,10 @@
 
 """Console script for ogit."""
 
-import click
 from pathlib import Path
 from types import SimpleNamespace
+
+import click
 
 from . import settings
 from .ogit import cli
