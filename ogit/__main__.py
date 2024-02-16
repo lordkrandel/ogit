@@ -12,13 +12,18 @@ from .ogit import cli
 from .project import Projects
 
 
-def get_paths():
-    config = Path(click.get_app_dir(settings.APPNAME, roaming=True, force_posix=False))
-    starting = Path.cwd().absolute()
-    projects = config / 'projects.json'
-    return SimpleNamespace(config=config, starting=starting, projects=projects)
+def main():
 
-if __name__ == '__main__':
+    def get_paths():
+        config = Path(click.get_app_dir(settings.APPNAME, roaming=True, force_posix=False))
+        starting = Path.cwd().absolute()
+        projects = config / 'projects.json'
+        return SimpleNamespace(config=config, starting=starting, projects=projects)
+
     settings.paths = get_paths()
     settings.projects = Projects.load_json(settings.paths.projects)
+
     cli()
+
+if __name__ == '__main__':
+    main()
