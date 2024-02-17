@@ -17,7 +17,6 @@ def cli():
 @cli.command()
 @click.pass_context
 def init(ctx):
-    ctx.forward(project.project_init)
     ctx.forward(project.projects_init)
 
 @cli.command()

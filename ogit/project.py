@@ -84,6 +84,8 @@ def project_status(ctx, _project=None):
 def project_init(ctx):
     if not settings.project:
         settings.project = Project()
+        print(f"{settings.project.path} created")
         if settings.projects:
             settings.projects[settings.project.name] = settings.project
-        print(f"{settings.project.path} created")
+        else:
+            ctx.forward(projects_init)
