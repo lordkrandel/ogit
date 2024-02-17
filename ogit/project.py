@@ -1,6 +1,9 @@
 import json
 
-from .json_mixin import JsonMixin
+import click
+import settings
+from git import Git
+from json_mixin import JsonMixin
 
 TEMPLATE = """{
     "name": "master",
@@ -10,10 +13,11 @@ TEMPLATE = """{
 
 class Project(JsonMixin):
 
-    def __init__(self, name, path, last_used):
-        self.name = name
-        self.path = path
-        self.last_used = last_used
+    def __init__(self, name=None, path=None, last_used=None):
+        path = path or settings.paths.starting
+        self.path = str(path)
+        self.name = name or path.name
+        self.last_used = last_used or Git.get_current_branch(self.path)
 
     @classmethod
     def from_json(cls, data):
@@ -34,7 +38,7 @@ class Projects(JsonMixin, dict):
 
     def __init__(self, projects=None):
         super().__init__()
-        self.update(projects or {})
+        self.update(projects or {settings.paths.starting.name: Project()})
 
     @classmethod
     def from_json(cls, data):
@@ -45,3 +49,41 @@ class Projects(JsonMixin, dict):
     def to_json(self):
         data = {k: v.__dict__ for k, v in self.items()}
         return json.dumps(data, indent=4)
+
+@click.group()
+def projects():
+    pass
+
+@projects.command(name='init')
+@click.pass_context
+def projects_init(ctx):
+    if not settings.projects:
+        settings.projects = Projects({settings.project.name: settings.project} if settings.project else {})
+        print(f"{settings.paths.projects} created")
+    settings.projects.save_json(settings.paths.projects)
+
+@projects.command(name='status')
+@click.pass_context
+def projects_status(ctx):
+    for project in settings.projects.values():
+        ctx.invoke(project_status, project)
+
+
+@click.group()
+def project():
+    pass
+
+@project.command(name='status')
+@click.pass_context
+def project_status(ctx, _project=None):
+    _project = _project or settings.project
+    Git.status(_project.path, extended=True, name=_project.name)
+
+@project.command(name='init')
+@click.pass_context
+def project_init(ctx):
+    if not settings.project:
+        settings.project = Project()
+        if settings.projects:
+            settings.projects[settings.project.name] = settings.project
+        print(f"{settings.project.path} created")

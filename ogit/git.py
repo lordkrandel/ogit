@@ -2,8 +2,7 @@ import re
 from pathlib import Path
 
 import invoke
-
-from .external import External
+from external import External
 
 
 class Git(External):
@@ -35,7 +34,8 @@ class Git(External):
         with context.cd(path):
             if extended:
                 print()
-                print(f"   {name}/")
+                if name:
+                    print(f"   {name}/")
                 context.run('git log --format="   %s (%h)" -n 1')
                 return context.run('git -c color.status=always status -sb', pty=True)
             else:
