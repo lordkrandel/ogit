@@ -50,11 +50,13 @@ class Projects(JsonMixin, dict):
         data = {k: v.__dict__ for k, v in self.items()}
         return json.dumps(data, indent=4)
 
-@click.group()
-def projects():
-    pass
+@click.group(invoke_without_command=True, name='projects')
+@click.pass_context
+def projects_group(ctx):
+    if ctx.invoked_subcommand is None:
+        print(settings.projects)
 
-@projects.command(name='init')
+@projects_group.command(name='init')
 @click.pass_context
 def projects_init(ctx):
     if not settings.projects:
@@ -62,24 +64,26 @@ def projects_init(ctx):
         print(f"{settings.paths.projects} created")
     settings.projects.save_json(settings.paths.projects)
 
-@projects.command(name='status')
+@projects_group.command(name='status')
 @click.pass_context
 def projects_status(ctx):
     for project in settings.projects.values():
         ctx.invoke(project_status, project)
 
 
-@click.group()
-def project():
-    pass
+@click.group(invoke_without_command=True, name='project')
+@click.pass_context
+def project_group(ctx):
+    if ctx.invoked_subcommand is None:
+        print(settings.project)
 
-@project.command(name='status')
+@project_group.command(name='status')
 @click.pass_context
 def project_status(ctx, _project=None):
     _project = _project or settings.project
     Git.status(_project.path, extended=True, name=_project.name)
 
-@project.command(name='init')
+@project_group.command(name='init')
 @click.pass_context
 def project_init(ctx):
     if not settings.project:

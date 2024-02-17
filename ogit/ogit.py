@@ -6,6 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import click
+import git
 import project
 import settings
 
@@ -24,6 +25,10 @@ def init(ctx):
 def status(ctx):
     ctx.forward(project.projects_status)
 
+@cli.command()
+@click.pass_context
+def projects(ctx):
+    ctx.forward(project.projects_print)
 
 def main():
 
@@ -37,8 +42,9 @@ def main():
     settings.projects = project.Projects.load_json(settings.paths.projects)
     settings.project = (settings.projects or {}).get(settings.paths.starting.name)
 
-    cli.add_command(project.project)
-    cli.add_command(project.projects)
+    cli.add_command(project.project_group)
+    cli.add_command(project.projects_group)
+    cli.add_command(git.git_group)
     cli()
 
 if __name__ == '__main__':

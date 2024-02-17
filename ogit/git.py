@@ -1,9 +1,10 @@
+import click
 import re
 from pathlib import Path
 
 import invoke
 from external import External
-
+import settings
 
 class Git(External):
 
@@ -80,10 +81,10 @@ class Git(External):
                 return [x.strip()[len_remote:] for x in entries.split('\n')]
 
     @classmethod
-    def diff(cls, path, repo_name):
+    def diff(cls, path, repo_name=None):
         context = invoke.Context()
         with context.cd(path):
-            print(f'{repo_name}:: {"-" * (80 - len(repo_name))}')
+            print(f'{(repo_name + ":: ") if repo_name else ""}:: {"-" * (80 - len(repo_name or ""))}')
             context.run('git diff')
 
     @classmethod
@@ -118,3 +119,21 @@ class Git(External):
         context = invoke.Context()
         with context.cd(path):
             context.run(f'git worktree add ../{branch} {branch}')
+
+@click.group(name='git')
+@click.pass_context
+def git_group(ctx):
+    pass
+
+@git_group.command(name='diff')
+@click.argument('path', required=False)
+@click.argument('repo_name', required=False)
+@click.pass_context
+def diff_command(ctx, path=None, repo_name=None):
+    Git.diff(path or settings.paths.starting, repo_name=repo_name)
+
+@git_group.command()
+@click.argument('path', required=False)
+@click.pass_context
+def status(ctx, path=None):
+    Git.status(path or settings.paths.starting, extended=True, name=None)
